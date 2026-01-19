@@ -7,7 +7,7 @@ Based on a tool I co-developed with colleagues at Form3 that helped us reduce th
 ## Installation
 
 ```bash
-go install github.com/jamesjoshuahill/observe/cmd/observe@latest
+go install github.com/jamesjoshuahill/observe@latest
 ```
 
 ## Usage
