@@ -11,6 +11,7 @@ import (
 
 	"github.com/jamesjoshuahill/observe/internal/browser"
 	"github.com/jamesjoshuahill/observe/internal/config"
+	"github.com/jamesjoshuahill/observe/internal/pagerduty"
 	"github.com/jamesjoshuahill/observe/internal/tools"
 )
 
@@ -111,6 +112,7 @@ func runOpen() error {
 	fs := flag.NewFlagSet("observe", flag.ExitOnError)
 	service := fs.String("service", "", "Service name")
 	env := fs.String("env", "", "Environment name")
+	alert := fs.String("alert", "", "PagerDuty incident URL for incident response")
 	toolsFlag := fs.String("tools", "", "Comma-separated list of tools (default: all)")
 
 	fs.Usage = func() {
@@ -121,15 +123,13 @@ func runOpen() error {
 		fmt.Fprintf(os.Stderr, "  validate  Validate config file\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		fs.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nExamples:\n")
+		fmt.Fprintf(os.Stderr, "  observe --service api --env prod\n")
+		fmt.Fprintf(os.Stderr, "  observe --alert https://example.pagerduty.com/incidents/P1234567\n")
 	}
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		return err
-	}
-
-	if *service == "" || *env == "" {
-		fs.Usage()
-		return fmt.Errorf("--service and --env are required")
 	}
 
 	cfg, err := config.Load()
@@ -137,13 +137,54 @@ func runOpen() error {
 		return err
 	}
 
-	envConfig, err := cfg.GetEnvironment(*env)
+	var serviceName, envName string
+	var runbookURL string
+
+	if *alert != "" {
+		// Incident response mode
+		if cfg.PagerDutyAPIKey == "" {
+			return fmt.Errorf("pagerduty_api_key required in config for --alert")
+		}
+
+		incidentID, err := pagerduty.ParseIncidentURL(*alert)
+		if err != nil {
+			return err
+		}
+
+		client := pagerduty.NewClient(cfg.PagerDutyAPIKey)
+		incident, err := client.GetIncident(incidentID)
+		if err != nil {
+			return fmt.Errorf("fetching incident: %w", err)
+		}
+
+		serviceName = incident.Service
+		envName = incident.Environment
+		runbookURL = incident.RunbookURL
+
+		fmt.Printf("Incident: service=%s environment=%s\n", serviceName, envName)
+	} else {
+		// Manual mode
+		if *service == "" || *env == "" {
+			fs.Usage()
+			return fmt.Errorf("--service and --env are required (or use --alert)")
+		}
+		serviceName = *service
+		envName = *env
+	}
+
+	envConfig, err := cfg.GetEnvironment(envName)
 	if err != nil {
+		if *alert != "" {
+			return fmt.Errorf("environment %q from incident not found in config", envName)
+		}
 		return err
 	}
 
-	svcConfig, err := cfg.GetServiceEnv(*service, *env)
+	svcConfig, err := cfg.GetServiceEnv(serviceName, envName)
 	if err != nil {
+		if *alert != "" {
+			return fmt.Errorf("service %q from incident not found in config", serviceName)
+		}
 		return err
 	}
 
@@ -174,6 +215,14 @@ func runOpen() error {
 
 		fmt.Printf("Opening %s: %s\n", t.Name(), url)
 		if err := browser.Open(url); err != nil {
+			return err
+		}
+	}
+
+	// Open runbook if present
+	if runbookURL != "" {
+		fmt.Printf("Opening runbook: %s\n", runbookURL)
+		if err := browser.Open(runbookURL); err != nil {
 			return err
 		}
 	}

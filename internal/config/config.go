@@ -10,8 +10,9 @@ import (
 
 // Config represents the top-level configuration.
 type Config struct {
-	Environments map[string]EnvironmentConfig `yaml:"environments"`
-	Services     map[string]ServiceConfig     `yaml:"services"`
+	PagerDutyAPIKey string                       `yaml:"pagerduty_api_key"`
+	Environments    map[string]EnvironmentConfig `yaml:"environments"`
+	Services        map[string]ServiceConfig     `yaml:"services"`
 }
 
 // EnvironmentConfig holds base URLs for each tool in an environment.

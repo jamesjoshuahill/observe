@@ -17,6 +17,9 @@ observe --service api --env prod
 # Open specific tools only
 observe --service api --env prod --tools grafana,kibana
 
+# Incident response: open tools based on PagerDuty alert
+observe --alert https://example.pagerduty.com/incidents/P1234567
+
 # List configured services and environments
 observe list
 
@@ -27,6 +30,17 @@ observe validate
 observe config
 ```
 
+### Incident response mode
+
+The `--alert` flag enables incident response workflow:
+
+1. Fetches incident details from PagerDuty API
+2. Extracts `service` and `environment` from alert metadata
+3. Opens all configured observability tools for that service/environment
+4. Opens runbook URL if present in the alert details
+
+This requires `pagerduty_api_key` in your config and alerts with `service` and `environment` fields in the incident body details.
+
 ## Configuration
 
 Config file location: `~/.config/observe/config.yaml`
@@ -34,6 +48,8 @@ Config file location: `~/.config/observe/config.yaml`
 ### Example config
 
 ```yaml
+pagerduty_api_key: "u+XXXXX..."  # Required for --alert flag
+
 environments:
   prod:
     grafana: "https://grafana.example.com"
