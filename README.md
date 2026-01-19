@@ -2,6 +2,8 @@
 
 A CLI that opens observability tools (Grafana, Kibana) for a given service and environment.
 
+Based on a tool I co-developed with colleagues at Form3 that helped us reduce the fatigue of monitoring our services across 10+ environments.
+
 ## Installation
 
 ```bash
