@@ -1,6 +1,6 @@
 # Project Context
 
-CLI tool that opens observability tools (Grafana, Kibana, PagerDuty) in the browser for a given service and environment.
+CLI tool that opens observability tools (Grafana, Kibana) in the browser for a given service and environment.
 
 ## Build & Test
 
@@ -21,7 +21,6 @@ internal/
     tools.go              # Tool interface and registry
     grafana.go            # Grafana URL builder
     kibana.go             # Kibana URL builder
-    pagerduty.go          # PagerDuty URL builder
 ```
 
 ## Architecture

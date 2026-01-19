@@ -17,9 +17,8 @@ type Config struct {
 
 // EnvironmentConfig holds base URLs for each tool in an environment.
 type EnvironmentConfig struct {
-	Grafana   string `yaml:"grafana"`
-	Kibana    string `yaml:"kibana"`
-	PagerDuty string `yaml:"pagerduty"`
+	Grafana string `yaml:"grafana"`
+	Kibana  string `yaml:"kibana"`
 }
 
 // ServiceConfig maps environment names to tool-specific settings.
@@ -29,7 +28,6 @@ type ServiceConfig map[string]ServiceEnvConfig
 type ServiceEnvConfig struct {
 	GrafanaDashboardID string `yaml:"grafana_dashboard_id"`
 	KibanaQuery        string `yaml:"kibana_query"`
-	PagerDutyServiceID string `yaml:"pagerduty_service_id"`
 }
 
 // Path returns the default config file path.

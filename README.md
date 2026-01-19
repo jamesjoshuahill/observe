@@ -1,6 +1,6 @@
 # observe
 
-A CLI that opens observability tools (Grafana, Kibana, PagerDuty) for a given service and environment.
+A CLI that opens observability tools (Grafana, Kibana) for a given service and environment.
 
 ## Installation
 
@@ -54,7 +54,6 @@ environments:
   prod:
     grafana: "https://grafana.example.com"
     kibana: "https://kibana.example.com"
-    pagerduty: "https://example.pagerduty.com"
   staging:
     grafana: "https://grafana-staging.example.com"
     kibana: "https://kibana-staging.example.com"
@@ -64,7 +63,6 @@ services:
     prod:
       grafana_dashboard_id: "abc123"
       kibana_query: "service:api"
-      pagerduty_service_id: "PXXXXXX"
     staging:
       grafana_dashboard_id: "abc123-staging"
       kibana_query: "service:api AND env:staging"
@@ -76,11 +74,10 @@ services:
 
 ### URL construction
 
-| Tool      | URL pattern                                                    |
-|-----------|----------------------------------------------------------------|
-| Grafana   | `{base}/d/{dashboard_id}`                                      |
-| Kibana    | `{base}/app/discover#/?_g=()&_a=(query:(query_string:(query:'{query}')))` |
-| PagerDuty | `{base}/services/{service_id}`                                 |
+| Tool    | URL pattern                                                    |
+|---------|----------------------------------------------------------------|
+| Grafana | `{base}/d/{dashboard_id}`                                      |
+| Kibana  | `{base}/app/discover#/?_g=()&_a=(query:(query_string:(query:'{query}')))` |
 
 ## Supported platforms
 

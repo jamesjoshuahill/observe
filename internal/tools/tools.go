@@ -13,9 +13,8 @@ type Tool interface {
 }
 
 var registry = map[string]Tool{
-	"grafana":   &Grafana{},
-	"kibana":    &Kibana{},
-	"pagerduty": &PagerDuty{},
+	"grafana": &Grafana{},
+	"kibana":  &Kibana{},
 }
 
 // Get returns a tool by name.
@@ -29,13 +28,12 @@ func All() []Tool {
 	return []Tool{
 		registry["grafana"],
 		registry["kibana"],
-		registry["pagerduty"],
 	}
 }
 
 // Names returns the names of all registered tools.
 func Names() []string {
-	return []string{"grafana", "kibana", "pagerduty"}
+	return []string{"grafana", "kibana"}
 }
 
 // ErrNotConfigured indicates a tool is not configured for a service/environment.
